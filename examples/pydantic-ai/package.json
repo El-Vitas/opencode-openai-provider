@@ -1,0 +1,11 @@
+{
+  "name": "pydantic-ai-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone PydanticAI example package for OpenCode provider compatibility testing.",
+  "scripts": {
+    "example:basic-text-chat": "python basic_text_chat.py",
+    "example:structured-output": "python structured_output.py",
+    "example:image-structured": "python image_structured_output.py"
+  }
+}
