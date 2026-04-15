@@ -1,20 +1,27 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { createOpenAIError, isOpenAIError, toOpenAIErrorBody } from "../../../openai/errors.js"
 
-function resolveStatusCode(error: unknown): number {
+const hasStatusCode = (value: unknown): value is { statusCode: number } => {
+  if (typeof value !== "object" || value === null || !("statusCode" in value)) {
+    return false
+  }
+
+  return typeof value.statusCode === "number"
+}
+
+const resolveStatusCode = (error: unknown): number => {
   if (isOpenAIError(error)) {
     return error.status
   }
 
-  if (typeof error === "object" && error !== null && "statusCode" in error) {
-    const statusCode = (error as { statusCode?: unknown }).statusCode
-    return typeof statusCode === "number" ? statusCode : 500
+  if (hasStatusCode(error)) {
+    return error.statusCode
   }
 
   return 500
 }
 
-export function applyGlobalHttpHandlers(app: FastifyInstance): void {
+export const applyGlobalHttpHandlers = (app: FastifyInstance): void => {
   app.setErrorHandler((error: unknown, _request: FastifyRequest, reply: FastifyReply) => {
     if (isOpenAIError(error)) {
       return reply.code(error.status).send(toOpenAIErrorBody(error))

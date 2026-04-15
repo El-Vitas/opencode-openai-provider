@@ -4,12 +4,14 @@ type AppLogger = {
   info: (obj: unknown, msg: string) => void
 }
 
-export function validateApiKeyIfRequired(
+const BEARER_PREFIX = "Bearer "
+
+export const validateApiKeyIfRequired = (
   requiredApiKey: string | undefined,
   authorizationHeader: string | string[] | undefined,
   requestID: string,
   logger: AppLogger,
-): void {
+): void => {
   if (!requiredApiKey) {
     return
   }
@@ -18,8 +20,8 @@ export function validateApiKeyIfRequired(
     typeof authorizationHeader === "string" ? authorizationHeader : Array.isArray(authorizationHeader) ? authorizationHeader[0] : undefined
 
   const bearerToken =
-    typeof normalizedAuthorizationHeader === "string" && normalizedAuthorizationHeader.startsWith("Bearer ")
-      ? normalizedAuthorizationHeader.slice("Bearer ".length).trim()
+    typeof normalizedAuthorizationHeader === "string" && normalizedAuthorizationHeader.startsWith(BEARER_PREFIX)
+      ? normalizedAuthorizationHeader.slice(BEARER_PREFIX.length).trim()
       : ""
 
   if (!bearerToken) {

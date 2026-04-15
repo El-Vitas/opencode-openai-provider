@@ -5,7 +5,7 @@ import { JSON_OBJECT_FALLBACK_SCHEMA, STRUCTURED_OUTPUT_RETRY_COUNT } from "./co
 import { createMapperInvalidRequest, isJsonSchemaFormat } from "./guards.js"
 import type { JsonSchema } from "./types.js"
 
-function assertValidJsonSchema(schema: unknown): asserts schema is JsonSchema {
+const assertValidJsonSchema: (schema: unknown) => asserts schema is JsonSchema = (schema) => {
   if (typeof schema !== "object" || schema === null || Array.isArray(schema)) {
     throw createMapperInvalidRequest(
       "response_format.json_schema.schema must be a JSON Schema object",
@@ -23,7 +23,7 @@ function assertValidJsonSchema(schema: unknown): asserts schema is JsonSchema {
   }
 }
 
-function sanitizeJsonSchemaValue(value: unknown): unknown {
+const sanitizeJsonSchemaValue = (value: unknown): unknown => {
   if (Array.isArray(value)) {
     return value.map((entry) => sanitizeJsonSchemaValue(entry))
   }
@@ -32,14 +32,14 @@ function sanitizeJsonSchemaValue(value: unknown): unknown {
     return value
   }
 
-  const sanitizedEntries = Object.entries(value)
+  const sanitizedEntries: Array<[string, unknown]> = Object.entries(value)
     .filter(([key]) => key !== "$schema")
-    .map(([key, nestedValue]) => [key, sanitizeJsonSchemaValue(nestedValue)] as const)
+    .map(([key, nestedValue]) => [key, sanitizeJsonSchemaValue(nestedValue)])
 
   return Object.fromEntries(sanitizedEntries)
 }
 
-function sanitizeJsonSchema(schema: JsonSchema): JsonSchema {
+const sanitizeJsonSchema = (schema: JsonSchema): JsonSchema => {
   const sanitizedSchema = sanitizeJsonSchemaValue(schema)
   if (isRecord(sanitizedSchema)) {
     return sanitizedSchema
@@ -48,7 +48,7 @@ function sanitizeJsonSchema(schema: JsonSchema): JsonSchema {
   return schema
 }
 
-function mapSchemaOutputFormat(responseFormat: OpenAIResponseFormatJsonSchema): OutputFormat {
+const mapSchemaOutputFormat = (responseFormat: OpenAIResponseFormatJsonSchema): OutputFormat => {
   const schema = responseFormat.json_schema?.schema
   assertValidJsonSchema(schema)
 
@@ -59,7 +59,7 @@ function mapSchemaOutputFormat(responseFormat: OpenAIResponseFormatJsonSchema): 
   }
 }
 
-export function mapOutputFormat(responseFormat: OpenAIChatCompletionRequest["response_format"]): OutputFormat | undefined {
+export const mapOutputFormat = (responseFormat: OpenAIChatCompletionRequest["response_format"]): OutputFormat | undefined => {
   if (responseFormat === undefined) {
     return undefined
   }

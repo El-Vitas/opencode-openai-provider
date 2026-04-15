@@ -2,59 +2,45 @@ import { buildApp } from "./app.js"
 import type { OpenAIModelMapping } from "./openai/types.js"
 import { isRecord } from "./utils/is-record.js"
 
-function parsePort(rawPort: string | undefined): number {
-  const defaultPort = 3000
+const DEFAULT_PORT = 3000
+const MIN_PORT = 1
+const MAX_PORT = 65_535
+const DEFAULT_PROMPT_TIMEOUT_MS = 30_000
+
+const parsePort = (rawPort: string | undefined): number => {
   if (rawPort === undefined || rawPort.trim().length === 0) {
-    return defaultPort
+    return DEFAULT_PORT
   }
 
   const parsedPort = Number.parseInt(rawPort, 10)
-  if (!Number.isInteger(parsedPort) || parsedPort < 1 || parsedPort > 65535) {
+  if (!Number.isInteger(parsedPort) || parsedPort < MIN_PORT || parsedPort > MAX_PORT) {
     throw new Error(`Invalid PORT value: ${rawPort}`)
   }
 
   return parsedPort
 }
 
-function parseModelMapping(rawModelMapping: string | undefined): OpenAIModelMapping | undefined {
-  if (!rawModelMapping || rawModelMapping.trim().length === 0) {
-    return undefined
+const DEFAULT_TARGET_MODEL = "github-copilot/gpt-4o"
+
+const parseModelString = (modelString: string): { providerID: string; modelID: string } => {
+  const slashIndex = modelString.indexOf("/")
+  if (slashIndex === -1) {
+    throw new Error(`Invalid model: ${modelString}. Expected "provider/model"`)
   }
 
-  const parsedValue: unknown = JSON.parse(rawModelMapping)
-  if (!isRecord(parsedValue)) {
-    throw new Error("OPENAI_MODEL_MAPPING must be a JSON object")
+  return {
+    providerID: modelString.slice(0, slashIndex),
+    modelID: modelString.slice(slashIndex + 1),
   }
-
-  const validatedMapping: OpenAIModelMapping = {}
-
-  for (const [openAIModel, modelValue] of Object.entries(parsedValue)) {
-    if (!isRecord(modelValue)) {
-      throw new Error(`Invalid model mapping for ${openAIModel}`)
-    }
-
-    const providerID = modelValue.providerID
-    const modelID = modelValue.modelID
-
-    if (typeof providerID !== "string" || providerID.length === 0) {
-      throw new Error(`Invalid providerID for ${openAIModel}`)
-    }
-
-    if (typeof modelID !== "string" || modelID.length === 0) {
-      throw new Error(`Invalid modelID for ${openAIModel}`)
-    }
-
-    validatedMapping[openAIModel] = {
-      providerID,
-      modelID,
-    }
-  }
-
-  return validatedMapping
 }
 
-async function startServer(): Promise<void> {
-  const providerApiKey = process.env.PROVIDER_API_KEY ?? process.env.OPENAI_API_KEY
+const createDefaultMapping = (defaultModelString: string): OpenAIModelMapping => {
+  const { providerID, modelID } = parseModelString(defaultModelString)
+  return { [defaultModelString]: { providerID, modelID } }
+}
+
+const startServer = async (): Promise<void> => {
+  const providerApiKey = process.env.API_KEY
   const promptTimeoutMsRaw = process.env.PROMPT_TIMEOUT_MS
   const promptTimeoutMs = promptTimeoutMsRaw ? Number.parseInt(promptTimeoutMsRaw, 10) : undefined
 
@@ -67,17 +53,21 @@ async function startServer(): Promise<void> {
     openai: {
       apiKey: providerApiKey,
       defaultAgent: process.env.OPENCODE_DEFAULT_AGENT,
-      modelMapping: parseModelMapping(process.env.OPENAI_MODEL_MAPPING),
+      modelMapping: createDefaultMapping(process.env.DEFAULT_MODEL ?? DEFAULT_TARGET_MODEL),
     },
   })
 
+  app.get("/health", async () => {
+    return { status: "ok" }
+  })
+
   app.log.info(
-    {
-      opencodeMode: "embedded",
-      promptTimeoutMs: promptTimeoutMs ?? 30_000,
-      defaultAgent: process.env.OPENCODE_DEFAULT_AGENT ?? null,
-    },
-    "Provider runtime configuration",
+      {
+        opencodeMode: "embedded",
+        promptTimeoutMs: promptTimeoutMs ?? DEFAULT_PROMPT_TIMEOUT_MS,
+        defaultAgent: process.env.OPENCODE_DEFAULT_AGENT ?? null,
+      },
+      "Provider runtime configuration",
   )
 
   const host = process.env.HOST ?? "0.0.0.0"

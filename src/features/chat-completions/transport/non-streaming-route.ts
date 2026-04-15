@@ -13,7 +13,7 @@ type AppLike = {
   log: FastifyBaseLogger
 }
 
-export async function runNonStreamingPrompt(parameters: {
+export const runNonStreamingPrompt = async (parameters: {
   client: OpenCodeClient
   promptTimeoutMs: number
   request: NonStreamingRequest
@@ -23,7 +23,7 @@ export async function runNonStreamingPrompt(parameters: {
   outputFormat: SessionPromptInput["format"]
   app: AppLike
   now: () => number
-}) {
+}) => {
   const { client, promptTimeoutMs, request, reply, sessionID, promptInput, outputFormat, app, now } = parameters
 
   app.log.info({ requestID: request.id, sessionID }, "Running non-stream prompt")

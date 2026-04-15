@@ -9,7 +9,7 @@ import { runNonStreamingPrompt } from "./non-streaming-route.js"
 import { sanitizeForLog } from "../infrastructure/log-sanitizer.js"
 import type { OpenCodeClient, SessionPromptInput } from "../types.js"
 
-export function registerChatCompletionRoute(parameters: {
+export const registerChatCompletionRoute = (parameters: {
   app: FastifyInstance
   client: OpenCodeClient
   requiredApiKey?: string
@@ -17,7 +17,7 @@ export function registerChatCompletionRoute(parameters: {
   modelMapping: OpenAIModelMapping
   promptTimeoutMs: number
   now: () => number
-}) {
+}) => {
   const { app, client, requiredApiKey, defaultAgent, modelMapping, promptTimeoutMs, now } = parameters
 
   app.post<{ Body: OpenAIChatCompletionRequest }>("/v1/chat/completions", async (request, reply) => {
@@ -118,4 +118,3 @@ export function registerChatCompletionRoute(parameters: {
     }
   })
 }
-

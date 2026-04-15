@@ -16,23 +16,23 @@ export class OpenAIError extends Error {
   }
 }
 
-export function createOpenAIError(
+export const createOpenAIError = (
   status: number,
   type: OpenAIErrorType,
   message: string,
   code?: string,
   param?: string,
-): OpenAIError {
+): OpenAIError => {
   return new OpenAIError(status, type, message, code, param)
 }
 
-export function isOpenAIError(value: unknown): value is OpenAIError {
+export const isOpenAIError = (value: unknown): value is OpenAIError => {
   return value instanceof OpenAIError
 }
 
-export function toOpenAIErrorBody(error: OpenAIError): {
+export const toOpenAIErrorBody = (error: OpenAIError): {
   error: { message: string; type: OpenAIErrorType; param: string | null; code: string | null }
-} {
+} => {
   return {
     error: {
       message: error.message,

@@ -3,14 +3,14 @@ import type { OpenAIChatCompletionRequest, OpenAIImageUrlPart } from "../types.j
 import { assertDataUrl, createMapperInvalidRequest, isImageUrlPart, normalizeRole } from "./guards.js"
 import type { MappedInputMessage } from "./types.js"
 
-function parseDataUrlMime(url: string): string {
+const parseDataUrlMime = (url: string): string => {
   const separatorIndex = url.indexOf(",")
   const metadata = separatorIndex === -1 ? url : url.slice(0, separatorIndex)
   const mimeMatch = /^data:([^;,]+)[;,]/.exec(metadata)
   return mimeMatch?.[1] ?? "application/octet-stream"
 }
 
-function mapImagePart(imagePart: OpenAIImageUrlPart): FilePartInput {
+const mapImagePart = (imagePart: OpenAIImageUrlPart): FilePartInput => {
   const imageUrl = imagePart.image_url?.url
   if (typeof imageUrl !== "string" || imageUrl.length === 0) {
     throw createMapperInvalidRequest(
@@ -29,10 +29,10 @@ function mapImagePart(imagePart: OpenAIImageUrlPart): FilePartInput {
   }
 }
 
-export function normalizeTextContent(content: OpenAIChatCompletionRequest["messages"][number]["content"]): {
+const normalizeTextContent = (content: OpenAIChatCompletionRequest["messages"][number]["content"]): {
   content: string
   files: FilePartInput[]
-} {
+} => {
   if (typeof content === "string") {
     return {
       content,
@@ -80,7 +80,7 @@ export function normalizeTextContent(content: OpenAIChatCompletionRequest["messa
   }
 }
 
-export function mapMessage(message: OpenAIChatCompletionRequest["messages"][number]): MappedInputMessage {
+export const mapMessage = (message: OpenAIChatCompletionRequest["messages"][number]): MappedInputMessage => {
   const normalizedContent = normalizeTextContent(message.content)
 
   return {

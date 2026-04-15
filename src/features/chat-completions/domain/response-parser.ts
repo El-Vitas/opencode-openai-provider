@@ -4,7 +4,7 @@ import type { ParsedPromptResponse } from "../types.js"
 
 type OpenCodeRawPart = Record<string, unknown>
 
-function formatPrimitive(value: unknown): string | undefined {
+const formatPrimitive = (value: unknown): string | undefined => {
   if (typeof value === "string") {
     return value
   }
@@ -20,7 +20,7 @@ function formatPrimitive(value: unknown): string | undefined {
   return undefined
 }
 
-function extractStateText(stateValue: unknown): string | undefined {
+const extractStateText = (stateValue: unknown): string | undefined => {
   if (!isRecord(stateValue)) {
     return undefined
   }
@@ -40,7 +40,7 @@ function extractStateText(stateValue: unknown): string | undefined {
   return typeof metadataText === "string" ? metadataText : undefined
 }
 
-function extractPartText(rawPart: OpenCodeRawPart): string | undefined {
+const extractPartText = (rawPart: OpenCodeRawPart): string | undefined => {
   const directText = rawPart.text
   if (typeof directText === "string") {
     return directText
@@ -65,7 +65,7 @@ function extractPartText(rawPart: OpenCodeRawPart): string | undefined {
   return extractStateText(rawPart.state)
 }
 
-export function parsePromptResponse(data: unknown): ParsedPromptResponse {
+export const parsePromptResponse = (data: unknown): ParsedPromptResponse => {
   if (!isRecord(data)) {
     throw createOpenAIError(500, "api_error", "Internal server error", "session_prompt_failed")
   }

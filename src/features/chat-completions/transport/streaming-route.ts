@@ -14,7 +14,9 @@ type AppLike = {
   log: FastifyBaseLogger
 }
 
-export async function runStreamingPrompt(parameters: {
+const MILLISECONDS_PER_SECOND = 1000
+
+export const runStreamingPrompt = async (parameters: {
   client: OpenCodeClient
   promptTimeoutMs: number
   request: StreamingRequest
@@ -23,7 +25,7 @@ export async function runStreamingPrompt(parameters: {
   promptInput: SessionPromptInput
   app: AppLike
   now: () => number
-}): Promise<StreamingReply> {
+}): Promise<StreamingReply> => {
   const { client, promptTimeoutMs, request, reply, sessionID, promptInput, app, now } = parameters
 
   reply.code(200)
@@ -33,7 +35,7 @@ export async function runStreamingPrompt(parameters: {
 
   const streamNow = now()
   const completionID = createChatCompletionId(`stream-${streamNow}`)
-  const created = Math.floor(streamNow / 1000)
+  const created = Math.floor(streamNow / MILLISECONDS_PER_SECOND)
   let terminalSent = false
 
   const sendFinishAndDone = () => {

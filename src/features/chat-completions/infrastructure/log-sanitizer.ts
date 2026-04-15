@@ -1,25 +1,30 @@
 import { isRecord } from "../../../utils/is-record.js"
 
-function sanitizeStringForLog(value: string): string {
-  if (value.startsWith("Bearer ")) {
-    return "Bearer [REDACTED]"
+const BEARER_PREFIX = "Bearer "
+const REDACTED_BEARER = "Bearer [REDACTED]"
+const DATA_URL_PREFIX = "data:"
+const LOG_STRING_MAX_LENGTH = 1200
+
+const sanitizeStringForLog = (value: string): string => {
+  if (value.startsWith(BEARER_PREFIX)) {
+    return REDACTED_BEARER
   }
 
-  if (value.startsWith("data:")) {
+  if (value.startsWith(DATA_URL_PREFIX)) {
     const separatorIndex = value.indexOf(",")
     const metadata = separatorIndex === -1 ? value : value.slice(0, separatorIndex)
     const payloadLength = separatorIndex === -1 ? 0 : value.length - separatorIndex - 1
     return `${metadata},[omitted:${payloadLength} chars]`
   }
 
-  if (value.length > 1200) {
-    return `${value.slice(0, 1200)}...[truncated:${value.length - 1200} chars]`
+  if (value.length > LOG_STRING_MAX_LENGTH) {
+    return `${value.slice(0, LOG_STRING_MAX_LENGTH)}...[truncated:${value.length - LOG_STRING_MAX_LENGTH} chars]`
   }
 
   return value
 }
 
-export function sanitizeForLog(value: unknown): unknown {
+export const sanitizeForLog = (value: unknown): unknown => {
   if (typeof value === "string") {
     return sanitizeStringForLog(value)
   }
@@ -32,12 +37,12 @@ export function sanitizeForLog(value: unknown): unknown {
     return value
   }
 
-  const sanitizedEntries = Object.entries(value).map(([key, nestedValue]) => {
+  const sanitizedEntries: Array<[string, unknown]> = Object.entries(value).map(([key, nestedValue]) => {
     if (key.toLowerCase() === "authorization") {
-      return [key, "[REDACTED]"] as const
+      return [key, "[REDACTED]"]
     }
 
-    return [key, sanitizeForLog(nestedValue)] as const
+    return [key, sanitizeForLog(nestedValue)]
   })
 
   return Object.fromEntries(sanitizedEntries)

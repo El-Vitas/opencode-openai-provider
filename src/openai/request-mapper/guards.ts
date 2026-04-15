@@ -1,11 +1,11 @@
 import { createOpenAIError } from "../errors.js"
 import type { OpenAIImageUrlPart, OpenAIResponseFormat, OpenAIResponseFormatJsonSchema, OpenAIRole } from "../types.js"
 
-function createInvalidRequest(message: string, code: string, param: string): Error {
+const createInvalidRequest = (message: string, code: string, param: string): Error => {
   return createOpenAIError(400, "invalid_request_error", message, code, param)
 }
 
-export function normalizeRole(role: OpenAIRole): OpenAIRole {
+export const normalizeRole = (role: OpenAIRole): OpenAIRole => {
   switch (role) {
     case "developer":
     case "system":
@@ -18,7 +18,7 @@ export function normalizeRole(role: OpenAIRole): OpenAIRole {
   }
 }
 
-export function assertDataUrl(url: string): void {
+export const assertDataUrl = (url: string): void => {
   if (!url.startsWith("data:")) {
     throw createInvalidRequest(
       "Only data URL images are supported for image_url content parts",
@@ -28,14 +28,14 @@ export function assertDataUrl(url: string): void {
   }
 }
 
-export function isImageUrlPart(contentPart: { type: string }): contentPart is OpenAIImageUrlPart {
+export const isImageUrlPart = (contentPart: { type: string }): contentPart is OpenAIImageUrlPart => {
   return contentPart.type === "image_url"
 }
 
-export function isJsonSchemaFormat(responseFormat: OpenAIResponseFormat): responseFormat is OpenAIResponseFormatJsonSchema {
+export const isJsonSchemaFormat = (responseFormat: OpenAIResponseFormat): responseFormat is OpenAIResponseFormatJsonSchema => {
   return responseFormat.type === "json_schema"
 }
 
-export function createMapperInvalidRequest(message: string, code: string, param: string): Error {
+export const createMapperInvalidRequest = (message: string, code: string, param: string): Error => {
   return createInvalidRequest(message, code, param)
 }

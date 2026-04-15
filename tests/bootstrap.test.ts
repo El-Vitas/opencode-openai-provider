@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { buildApp } from "../src/app.js"
 import type { OpenCodeModel } from "../src/openai/types.js"
 
-function parseSse(body: string): string[] {
+const parseSse = (body: string): string[] => {
   return body
     .split("\n\n")
     .map((chunk) => chunk.trim())
@@ -23,7 +23,7 @@ type PromptCall = {
   }>
 }
 
-function createMockClient() {
+const createMockClient = () => {
   const create = vi.fn(async () => ({
     data: { id: "session-1" },
   }))
@@ -242,7 +242,7 @@ describe("openai provider bootstrap", () => {
     expect(response.statusCode).toBe(200)
 
     const events = parseSse(response.body)
-    expect(events.at(-1)).toBe("[DONE]")
+    expect(events[events.length - 1]).toBe("[DONE]")
 
     const payloads = events.slice(0, -1).map((event) => JSON.parse(event))
     expect(payloads).toEqual([

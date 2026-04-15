@@ -9,7 +9,7 @@ import { z } from "zod"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-function loadRequiredEnv(variableName) {
+const loadRequiredEnv = (variableName) => {
   const value = process.env[variableName]
   if (!value) {
     throw new Error(`Missing required environment variable: ${variableName}`)

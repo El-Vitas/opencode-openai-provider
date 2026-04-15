@@ -5,7 +5,9 @@ import { createClient } from "./features/chat-completions/infrastructure/opencod
 import { DEFAULT_MODEL_MAPPING } from "./features/chat-completions/domain/constants.js"
 import type { BuildAppOptions } from "./features/chat-completions/types.js"
 
-export async function buildApp(options: BuildAppOptions = {}) {
+const DEFAULT_PROMPT_TIMEOUT_MS = 30_000
+
+export const buildApp = async (options: BuildAppOptions = {}) => {
   const app = Fastify({ logger: true })
   let client = options.client
 
@@ -23,7 +25,7 @@ export async function buildApp(options: BuildAppOptions = {}) {
   const requiredApiKey = options.openai?.apiKey
   const defaultAgent = options.openai?.defaultAgent
   const modelMapping = options.openai?.modelMapping ?? DEFAULT_MODEL_MAPPING
-  const promptTimeoutMs = options.promptTimeoutMs ?? 30_000
+  const promptTimeoutMs = options.promptTimeoutMs ?? DEFAULT_PROMPT_TIMEOUT_MS
   const now = options.now ?? (() => Date.now())
 
   applyGlobalHttpHandlers(app)

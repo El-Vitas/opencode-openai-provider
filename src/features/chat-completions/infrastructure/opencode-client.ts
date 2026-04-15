@@ -1,7 +1,7 @@
 import { createOpencode, createOpencodeClient } from "@opencode-ai/sdk/v2"
 import type { OpenCodeClient, OpenCodeManagedServer, OpenCodeSdkClientLike } from "../types.js"
 
-function wrapSdkClient(sdkClient: OpenCodeSdkClientLike): OpenCodeClient {
+const wrapSdkClient = (sdkClient: OpenCodeSdkClientLike): OpenCodeClient => {
   return {
     session: {
       create: () => sdkClient.session.create(),
@@ -11,10 +11,10 @@ function wrapSdkClient(sdkClient: OpenCodeSdkClientLike): OpenCodeClient {
   }
 }
 
-export async function createClient(baseUrl?: string): Promise<{
+export const createClient = async (baseUrl?: string): Promise<{
   client: OpenCodeClient
   managedServer?: OpenCodeManagedServer
-}> {
+}> => {
   if (baseUrl && baseUrl.trim().length > 0) {
     const sdkClient = createOpencodeClient({ baseUrl })
     return {

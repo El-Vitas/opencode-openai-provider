@@ -7,14 +7,14 @@ import {
   ROOT_PROMPT_STRUCTURED_SCHEMA_PREFIX,
 } from "./constants.js"
 
-function createTextPart(text: string): TextPartInput {
+const createTextPart = (text: string): TextPartInput => {
   return {
     type: "text",
     text,
   }
 }
 
-function buildRootPrompt(outputFormat: OutputFormat | undefined): string {
+const buildRootPrompt = (outputFormat: OutputFormat | undefined): string => {
   const rootPromptSegments = [ROOT_PROMPT_BASE]
 
   if (outputFormat?.type === "json_schema") {
@@ -25,10 +25,10 @@ function buildRootPrompt(outputFormat: OutputFormat | undefined): string {
   return `<root> ${rootPromptSegments.join(" ")} </root>`
 }
 
-export function buildPromptParts(
+export const buildPromptParts = (
   messages: MappedChatCompletionRequest["messages"],
   outputFormat: OutputFormat | undefined,
-): Array<TextPartInput | FilePartInput> {
+): Array<TextPartInput | FilePartInput> => {
   const promptParts: Array<TextPartInput | FilePartInput> = []
 
   for (const message of messages) {

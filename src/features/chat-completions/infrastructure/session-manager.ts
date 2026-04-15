@@ -2,7 +2,7 @@ import { createOpenAIError } from "../../../openai/errors.js"
 import { isRecord } from "../../../utils/is-record.js"
 import type { OpenCodeClient } from "../types.js"
 
-export function getSessionIDFromCreateResponse(createResponse: { data?: unknown; error?: unknown }): string {
+export const getSessionIDFromCreateResponse = (createResponse: { data?: unknown; error?: unknown }): string => {
   if (createResponse.error !== undefined) {
     const rawError = createResponse.error
     const errorMessage = rawError instanceof Error ? rawError.message : "OpenCode session create failed"
@@ -22,11 +22,11 @@ export function getSessionIDFromCreateResponse(createResponse: { data?: unknown;
   return sessionID
 }
 
-export async function safeDeleteSession(
+export const safeDeleteSession = async (
   client: OpenCodeClient,
   sessionID: string,
   app: { log: { info: (obj: unknown, msg: string) => void; error: (obj: unknown, msg: string) => void } },
-) {
+) => {
   try {
     app.log.info({ sessionID }, "Deleting OpenCode session")
     await client.session.delete({ sessionID })
@@ -36,7 +36,7 @@ export async function safeDeleteSession(
   }
 }
 
-export async function withPromptTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+export const withPromptTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
   let timeoutId: ReturnType<typeof setTimeout> | undefined
 
   const timeoutPromise = new Promise<never>((_, reject) => {
