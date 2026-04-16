@@ -126,15 +126,15 @@ These keys have different scopes and are not interchangeable.
 
 This repository includes a multi-stage `Dockerfile` optimized for runtime size.
 
-Published image (the one that will be pushed):
+Published image (Docker Hub):
 
-- `ghcr.io/el-vitas/opencode-openai-provider:latest`
-- `ghcr.io/el-vitas/opencode-openai-provider:0.1.1`
+- `docker.io/elvitas/opencode-openai-provider:latest`
+- `docker.io/elvitas/opencode-openai-provider:0.1.1`
 
 Pull image:
 
 ```bash
-docker pull ghcr.io/el-vitas/opencode-openai-provider:latest
+docker pull docker.io/elvitas/opencode-openai-provider:latest
 ```
 
 Build image:
@@ -322,3 +322,7 @@ For each incoming chat completion request:
 - Auth context is layered: inbound provider auth, OpenCode server auth, and upstream provider auth.
 - `*_API_KEY` provider discovery is environment-driven and exposed via `/providers`.
 - Example packages are intentionally isolated from core runtime code.
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
