@@ -1,6 +1,6 @@
 {
   "name": "opencode-openai-provider",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "OpenAI-compatible provider server backed by @opencode-ai/sdk",
   "type": "module",
   "main": "./dist/index.js",

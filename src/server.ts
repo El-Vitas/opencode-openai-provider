@@ -50,6 +50,7 @@ const startServer = async (): Promise<void> => {
 
   const app = await buildApp({
     promptTimeoutMs,
+    opencodeBaseUrl: process.env.OPENCODE_BASE_URL,
     openai: {
       apiKey: providerApiKey,
       defaultAgent: process.env.OPENCODE_DEFAULT_AGENT,
