@@ -27,6 +27,7 @@ export const buildApp = async (options: BuildAppOptions = {}) => {
   const modelMapping = options.openai?.modelMapping ?? DEFAULT_MODEL_MAPPING
   const promptTimeoutMs = options.promptTimeoutMs ?? DEFAULT_PROMPT_TIMEOUT_MS
   const now = options.now ?? (() => Date.now())
+  const providerKeys = options.openai?.providerKeys
 
   applyGlobalHttpHandlers(app)
 
@@ -38,6 +39,7 @@ export const buildApp = async (options: BuildAppOptions = {}) => {
     modelMapping,
     promptTimeoutMs,
     now,
+    providerKeys,
   })
 
   return app

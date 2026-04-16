@@ -1,6 +1,6 @@
 {
   "name": "opencode-openai-provider",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenAI-compatible provider server backed by @opencode-ai/sdk",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,7 +11,7 @@
     "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "start": "node --env-file=.env dist/src/server.js",
+    "start": "node --env-file=.env dist/server.js",
     "serve": "npm run build && npm run start"
   },
   "dependencies": {

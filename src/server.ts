@@ -39,6 +39,23 @@ const createDefaultMapping = (defaultModelString: string): OpenAIModelMapping =>
   return { [defaultModelString]: { providerID, modelID } }
 }
 
+const extractProviderKeys = (): Record<string, string> => {
+  const keys: Record<string, string> = {}
+  const pattern = /^(.+)_API_KEY$/i
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (value && value.trim().length > 0) {
+      const match = key.match(pattern)
+      if (match) {
+        const providerID = match[1].toLowerCase()
+        keys[providerID] = value.trim()
+      }
+    }
+  }
+
+  return keys
+}
+
 const startServer = async (): Promise<void> => {
   const providerApiKey = process.env.API_KEY
   const promptTimeoutMsRaw = process.env.PROMPT_TIMEOUT_MS
@@ -55,11 +72,18 @@ const startServer = async (): Promise<void> => {
       apiKey: providerApiKey,
       defaultAgent: process.env.OPENCODE_DEFAULT_AGENT,
       modelMapping: createDefaultMapping(process.env.DEFAULT_MODEL ?? DEFAULT_TARGET_MODEL),
+      providerKeys: extractProviderKeys(),
     },
   })
 
+  const providerKeys = extractProviderKeys()
+
   app.get("/health", async () => {
     return { status: "ok" }
+  })
+
+  app.get("/providers", async () => {
+    return { providers: Object.keys(providerKeys) }
   })
 
   app.log.info(

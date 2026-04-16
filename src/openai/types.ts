@@ -9,6 +9,7 @@ export interface OpenAIProviderConfig {
   apiKey?: string
   defaultAgent?: string
   modelMapping?: OpenAIModelMapping
+  providerKeys?: Record<string, string>
 }
 
 export type OpenAIRole = "system" | "developer" | "user" | "assistant" | "tool"

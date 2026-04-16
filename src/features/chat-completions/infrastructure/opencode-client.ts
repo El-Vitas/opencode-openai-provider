@@ -8,6 +8,10 @@ const wrapSdkClient = (sdkClient: OpenCodeSdkClientLike): OpenCodeClient => {
       prompt: (parameters) => sdkClient.session.prompt(parameters),
       delete: (parameters) => sdkClient.session.delete(parameters),
     },
+    auth: {
+      set: (parameters) => sdkClient.auth.set(parameters),
+      remove: (parameters) => sdkClient.auth.remove(parameters),
+    },
   }
 }
 

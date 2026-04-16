@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
+import type { FastifyInstance } from "fastify"
 import { mapChatCompletionRequest } from "../../../openai/request-mapper.js"
 import type { OpenAIChatCompletionRequest, OpenAIModelMapping } from "../../../openai/types.js"
 import { validateApiKeyIfRequired } from "../application/auth.js"
@@ -17,8 +17,9 @@ export const registerChatCompletionRoute = (parameters: {
   modelMapping: OpenAIModelMapping
   promptTimeoutMs: number
   now: () => number
+  providerKeys?: Record<string, string>
 }) => {
-  const { app, client, requiredApiKey, defaultAgent, modelMapping, promptTimeoutMs, now } = parameters
+  const { app, client, requiredApiKey, defaultAgent, modelMapping, promptTimeoutMs, now, providerKeys } = parameters
 
   app.post<{ Body: OpenAIChatCompletionRequest }>("/v1/chat/completions", async (request, reply) => {
     app.log.info(
@@ -49,6 +50,20 @@ export const registerChatCompletionRoute = (parameters: {
       },
       "Chat completion request mapped",
     )
+
+    if (providerKeys && mappedRequest.model.providerID) {
+      const providerKey = providerKeys[mappedRequest.model.providerID]
+      if (providerKey) {
+        app.log.info(
+          { requestID: request.id, providerID: mappedRequest.model.providerID },
+          "Setting provider API key",
+        )
+        await client.auth.set({
+          providerID: mappedRequest.model.providerID,
+          auth: { type: "api", key: providerKey },
+        })
+      }
+    }
 
     app.log.info({ requestID: request.id }, "Creating OpenCode session")
     const createResult = await client.session.create()

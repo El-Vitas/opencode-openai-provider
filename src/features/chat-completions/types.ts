@@ -15,6 +15,10 @@ export type OpenCodeClient = {
     prompt: (parameters: SessionPromptInput) => Promise<{ data?: unknown }>
     delete: (parameters: { sessionID: string }) => Promise<{ data?: unknown }>
   }
+  auth: {
+    set: (parameters: { providerID: string; auth: { type: "api"; key: string } }) => Promise<{ data?: unknown; error?: unknown }>
+    remove: (parameters: { providerID: string }) => Promise<{ data?: unknown; error?: unknown }>
+  }
 }
 
 export type OpenCodeManagedServer = {
@@ -44,5 +48,9 @@ export type OpenCodeSdkClientLike = {
     create: () => Promise<{ data?: unknown; error?: unknown }>
     prompt: (parameters: SessionPromptInput) => Promise<{ data?: unknown }>
     delete: (parameters: { sessionID: string }) => Promise<{ data?: unknown }>
+  }
+  auth: {
+    set: (parameters: { providerID: string; auth: { type: "api"; key: string } }) => Promise<{ data?: unknown; error?: unknown }>
+    remove: (parameters: { providerID: string }) => Promise<{ data?: unknown; error?: unknown }>
   }
 }
