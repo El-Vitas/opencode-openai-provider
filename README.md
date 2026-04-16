@@ -23,6 +23,23 @@ Use your existing AI sub-systems and tooling without rewriting your app stack:
 - Route requests to OpenCode model targets from your existing subs stack.
 - Keep your current OpenAI client contract while changing runtime provider strategy.
 
+## Quick Start (Docker Hub)
+
+```bash
+# Pull and run (replace values with yours)
+docker run --rm -p 3000:3000 \
+  -e API_KEY=your-api-key \
+  -e DEFAULT_MODEL=openai/gpt-4o \
+  -e OPENAI_API_KEY=sk-... \
+  elvitas/opencode-openai-provider:latest
+
+# Test it
+curl -X POST http://localhost:3000/v1/chat/completions \
+  -H "Authorization: Bearer your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "openai/gpt-4o", "messages": [{"role": "user", "content": "Hi"}]}'
+```
+
 ## Why this exists
 
 - Reuse existing OpenAI client ecosystems without rewriting your app protocol.
